@@ -23,11 +23,11 @@ export const COLLECTIONS_QUERY = gql(`
 
 export const COLLECTION_QUERY = gql(
   `
-  query Collection($handle: String!, $after: String, $country: CountryCode, $language: LanguageCode)
+  query Collection($handle: String!, $first: Int!, $after: String, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $country: CountryCode, $language: LanguageCode)
   @inContext(country: $country, language: $language) {
     collection(handle: $handle) {
       id handle title description
-      products(first: 12, after: $after) {
+      products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) {
         nodes { ...ProductCard }
         pageInfo { hasNextPage endCursor }
       }
@@ -69,3 +69,19 @@ export const PRODUCT_VARIANTS_QUERY = gql(`
 
 export type ProductCard = StorefrontApi.ResultOf<typeof PRODUCTS_QUERY>['products']['nodes'][number];
 export type Product = NonNullable<StorefrontApi.ResultOf<typeof PRODUCT_QUERY>['product']>;
+
+export const PRODUCTS_CURSOR_QUERY = gql(`
+  query ProductsCursor($first: Int!, $after: String, $sortKey: ProductSortKeys, $reverse: Boolean, $country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) { pageInfo { hasNextPage endCursor } }
+  }
+`);
+
+export const COLLECTION_CURSOR_QUERY = gql(`
+  query CollectionCursor($handle: String!, $first: Int!, $after: String, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) { pageInfo { hasNextPage endCursor } }
+    }
+  }
+`);

@@ -15,6 +15,7 @@ export function webhookTags(topic: string) {
   if (topic.startsWith('collections/')) return [catalogTags.collections, catalogTags.products];
   if (topic.startsWith('shop/') || topic.startsWith('policies/') || topic.startsWith('menus/')) return ['content:shop'];
   if (topic.startsWith('pages/')) return ['content:pages', 'content:shop'];
+  if (topic.startsWith('blogs/') || topic.startsWith('articles/')) return ['content:blogs'];
   return [];
 }
 

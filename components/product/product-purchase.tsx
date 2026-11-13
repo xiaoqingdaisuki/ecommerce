@@ -5,10 +5,11 @@ import Link from 'next/link';
 import type { Product } from '@/lib/shopify/queries/catalog';
 import { useCart, useCartForm } from '@/lib/shopify/cart.client';
 import { formatPrice } from '@/lib/utils/money';
+import { variantParam } from '@/lib/utils/shopify-routes';
 
 export function ProductPurchase({ product, initialVariantId }: { product: Product; initialVariantId?: string }) {
   const first =
-    product.variants.nodes.find((variant) => variant.id === initialVariantId) ??
+    product.variants.nodes.find((variant) => variantParam(variant.id) === variantParam(initialVariantId ?? '')) ??
     product.variants.nodes.find((variant) => variant.availableForSale) ??
     product.variants.nodes[0];
   const [selectedId, setSelectedId] = useState(first?.id);
@@ -39,7 +40,7 @@ export function ProductPurchase({ product, initialVariantId }: { product: Produc
             setSelectedId(event.target.value);
             setSubmitted(false);
             const url = new URL(window.location.href);
-            url.searchParams.set('variant', event.target.value);
+            url.searchParams.set('variant', variantParam(event.target.value));
             window.history.replaceState(null, '', url);
           }}
         >

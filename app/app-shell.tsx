@@ -26,7 +26,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
   const links = shop.mainMenu.length
     ? mapLinks(shop.mainMenu)
     : [
-        { title: 'Shop', href: '/search' },
+        { title: 'Shop', href: '/collections/all' },
         { title: 'Collections', href: '/collections' },
       ];
   const footerLinks = mapLinks(shop.footerMenu);

@@ -10,9 +10,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [
     { url: origin, changeFrequency: 'daily' },
     { url: `${origin}/collections`, changeFrequency: 'weekly' },
+    { url: `${origin}/collections/all`, changeFrequency: 'daily' },
   ];
   const collections = await getCollections();
-  entries.push(...collections.map(({ handle }) => ({ url: `${origin}/collections/${handle}` })));
+  entries.push(
+    ...collections
+      .filter(({ handle }) => handle !== 'all')
+      .map(({ handle }) => ({ url: `${origin}/collections/${handle}` })),
+  );
   const client = createCatalogClient();
   let after: string | undefined;
   // The starter deliberately fails above the single-sitemap limit instead of silently truncating.

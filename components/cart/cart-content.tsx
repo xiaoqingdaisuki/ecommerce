@@ -45,7 +45,7 @@ function CartBody({ isDemo }: { isDemo: boolean }) {
           <p className="eyebrow">Room for something good</p>
           <h2>Your bag is empty.</h2>
           <p className="muted">A few considered essentials are a good place to start.</p>
-          <Link className="button" href="/search">
+          <Link className="button" href="/collections/all">
             Explore the collection <span>↗</span>
           </Link>
         </div>

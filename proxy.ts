@@ -3,18 +3,28 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createRequestClient } from '@/lib/shopify/client';
 import { cartHandlers } from '@/lib/shopify/cart.server';
 import { predictiveSearchHandlers } from '@/lib/shopify/search.server';
+import { isNativeVariantPage } from '@/lib/utils/shopify-routes';
 
 export const routeTemplates = createShopifyRouteTemplates({});
 
 export function proxy(request: NextRequest) {
   const { client, requestContext } = createRequestClient(request);
-  const shopifyRoute = handleShopifyRoutes({
-    request,
-    requestContext,
-    storefrontClient: client,
-    routeTemplates,
-    handlers: [cartHandlers, predictiveSearchHandlers],
-  });
+  // Hydrogen 2026.10 rewrites numeric variant URLs to option parameters.
+  // Our product pages implement Shopify's original numeric variant URL directly.
+  const nativeVariantPage = isNativeVariantPage(
+    request.nextUrl.pathname,
+    request.method,
+    request.nextUrl.searchParams.has('variant'),
+  );
+  const shopifyRoute = nativeVariantPage
+    ? null
+    : handleShopifyRoutes({
+        request,
+        requestContext,
+        storefrontClient: client,
+        routeTemplates,
+        handlers: [cartHandlers, predictiveSearchHandlers],
+      });
   if (shopifyRoute) return shopifyRoute;
 
   const requestHeaders = requestContext.getForwardedRequestHeaders();

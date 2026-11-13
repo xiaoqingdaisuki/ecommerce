@@ -17,7 +17,7 @@ export default function AccountPage() {
           Continue to Shopify account <span>↗</span>
         </a>
       )}
-      <Link href="/search" className="text-link">
+      <Link href="/collections/all" className="text-link">
         Continue shopping
       </Link>
     </section>

@@ -26,7 +26,7 @@ export default async function HomePage() {
             ? 'Thoughtfully chosen. Effortlessly worn. Essentials for wherever the day takes you.'
             : shop.home?.bodySummary || shop.description}
         </p>
-        <Link className="text-link hero-link" href="/search">
+        <Link className="text-link hero-link" href="/collections/all">
           Discover the collection <span>↗</span>
         </Link>
       </section>
@@ -36,12 +36,12 @@ export default async function HomePage() {
             <p className="eyebrow">Good things, on repeat</p>
             <h2>Everyday essentials</h2>
           </div>
-          <Link className="text-link" href="/search">
+          <Link className="text-link" href="/collections/all">
             Shop all <span>↗</span>
           </Link>
         </div>
         <div className="collection-tabs">
-          <Link href="/search" className="active">
+          <Link href="/collections/all" className="active">
             All essentials
           </Link>
           {collections.map((collection) => (

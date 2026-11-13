@@ -51,7 +51,7 @@ export default async function ProductPage({
       <div className="breadcrumbs">
         <Link href="/">Home</Link>
         <span>/</span>
-        <Link href="/search">Shop</Link>
+        <Link href="/collections/all">Shop</Link>
         <span>/</span>
         <span>{product.title}</span>
       </div>

@@ -5,6 +5,8 @@ const config: NextConfig = {
   partialPrefetching: true,
   agentRules: false,
   poweredByHeader: false,
+  // Bound catalog prerender bursts against the upstream Storefront API.
+  experimental: { cpus: 2 },
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'cdn.shopify.com' }],
   },

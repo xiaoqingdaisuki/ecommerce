@@ -1,4 +1,5 @@
 import 'server-only';
+import type { ProductSortKeys, ProductCollectionSortKeys } from '@shopify/hydrogen/storefront-api-types';
 import { cacheLife, cacheTag } from 'next/cache';
 import { createCatalogClient } from '@/lib/shopify/client';
 import {
@@ -7,8 +8,11 @@ import {
   PRODUCT_QUERY,
   PRODUCT_VARIANTS_QUERY,
   PRODUCTS_QUERY,
+  PRODUCTS_CURSOR_QUERY,
+  COLLECTION_CURSOR_QUERY,
 } from '@/lib/shopify/queries/catalog';
 import { catalogTags } from '@/lib/cache/tags';
+import { PAGE_SIZE, pageCursor, type CollectionSort } from '@/lib/utils/shopify-routes';
 
 export async function getFeaturedProducts() {
   'use cache: remote';
@@ -55,19 +59,70 @@ export async function getProduct(handle: string) {
   return data.product;
 }
 
-/** Cursor and arbitrary search queries remain uncached to bound cache cardinality. */
-export async function getProducts(query?: string, after?: string, sort = 'featured') {
-  const sortKey =
-    sort === 'price-asc' || sort === 'price-desc' ? 'PRICE' : sort === 'newest' ? 'CREATED_AT' : 'RELEVANCE';
-  const { data, errors } = await createCatalogClient().graphql(PRODUCTS_QUERY, {
-    variables: { first: 12, query, after, sortKey, reverse: sort === 'price-desc' || sort === 'newest' },
+function sortVariables(sort: CollectionSort): {
+  products: { sortKey: ProductSortKeys; reverse: boolean };
+  collection: { sortKey: ProductCollectionSortKeys; reverse: boolean };
+} {
+  const reverse = sort.endsWith('-descending');
+  const sharedKey = sort.startsWith('price-')
+    ? 'PRICE'
+    : sort.startsWith('title-')
+      ? 'TITLE'
+      : sort.startsWith('created-')
+        ? 'CREATED'
+        : sort === 'best-selling'
+          ? 'BEST_SELLING'
+          : undefined;
+  return {
+    products: { sortKey: sharedKey === 'CREATED' ? ('CREATED_AT' as const) : (sharedKey ?? ('ID' as const)), reverse },
+    collection: { sortKey: sharedKey ?? ('MANUAL' as const), reverse },
+  };
+}
+
+/** Shopify's implicit all-products collection exists even without a custom collection named all. */
+export async function getAllProducts(page = 1, sort: CollectionSort = 'title-ascending') {
+  const client = createCatalogClient();
+  const variables = sortVariables(sort).products;
+  const cursor = await pageCursor(page, async (first, after) => {
+    const { data, errors } = await client.graphql(PRODUCTS_CURSOR_QUERY, { variables: { first, after, ...variables } });
+    if (errors?.length || !data) throw new Error('Product pagination is temporarily unavailable.');
+    return data.products.pageInfo;
+  });
+  if (cursor.exhausted) return { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } };
+  const { data, errors } = await client.graphql(PRODUCTS_QUERY, {
+    variables: { first: PAGE_SIZE, after: cursor.after, ...variables },
   });
   if (errors?.length || !data) throw new Error('Products are temporarily unavailable.');
   return data.products;
 }
 
-export async function getCollection(handle: string, after?: string) {
-  const { data, errors } = await createCatalogClient().graphql(COLLECTION_QUERY, { variables: { handle, after } });
+export async function getCollection(handle: string, page = 1, sort: CollectionSort = 'manual') {
+  const client = createCatalogClient();
+  const variables = { handle, ...sortVariables(sort).collection };
+  const { data, errors } = await client.graphql(COLLECTION_QUERY, { variables: { first: PAGE_SIZE, ...variables } });
   if (errors?.length || !data) throw new Error('This collection could not be loaded.');
-  return data.collection;
+  if (!data.collection) {
+    if (handle !== 'all') return null;
+    return {
+      id: 'all',
+      handle: 'all',
+      title: 'All products',
+      description: '',
+      products: await getAllProducts(page, sort === 'manual' ? 'title-ascending' : sort),
+    };
+  }
+  if (page === 1) return data.collection;
+  const cursor = await pageCursor(page, async (first, after) => {
+    const result = await client.graphql(COLLECTION_CURSOR_QUERY, { variables: { first, after, ...variables } });
+    if (result.errors?.length || !result.data?.collection)
+      throw new Error('Collection pagination is temporarily unavailable.');
+    return result.data.collection.products.pageInfo;
+  });
+  if (cursor.exhausted)
+    return { ...data.collection, products: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } };
+  const result = await client.graphql(COLLECTION_QUERY, {
+    variables: { first: PAGE_SIZE, after: cursor.after, ...variables },
+  });
+  if (result.errors?.length || !result.data?.collection) throw new Error('This collection could not be loaded.');
+  return result.data.collection;
 }
