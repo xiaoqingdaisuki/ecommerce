@@ -9,7 +9,7 @@ export function Footer({ name, links }: { name: string; links: NavigationLink[] 
           {name}
           <span className="wordmark-dot">®</span>
         </Link>
-        <p className="muted small">Powered by Shopify. Made for your everyday.</p>
+        <p className="muted small">Powered by xiaoqingdaisuki. Made for your everyday.</p>
       </div>
       <nav aria-label="Footer navigation">
         {links.map((link) => (
