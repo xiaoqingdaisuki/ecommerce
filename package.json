@@ -1,0 +1,40 @@
+{
+  "name": "atelier-storefront",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24.0.0 <27"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "check": "next typegen && tsc --noEmit && node node_modules/gql.tada/bin/cli.js check --tsconfig tsconfig.graphql.json --fail-on-warn && tsx --test tests/*.test.ts",
+    "typecheck": "next typegen && tsc --noEmit",
+    "graphql:check": "node node_modules/gql.tada/bin/cli.js check --tsconfig tsconfig.graphql.json --fail-on-warn",
+    "test": "tsx --test tests/*.test.ts",
+    "clean": "node -e \"require('node:fs').rmSync('.next', { recursive: true, force: true })\""
+  },
+  "dependencies": {
+    "@base-ui/react": "1.9.0",
+    "@shopify/hydrogen": "2026.10.3",
+    "@tailwindcss/postcss": "4.3.5",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sanitize-html": "2.18.1",
+    "server-only": "0.0.1",
+    "tailwindcss": "4.3.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/sanitize-html": "2.16.2",
+    "gql.tada": "1.9.2",
+    "tsx": "^4.0.0",
+    "typescript": "6.0.3"
+  }
+}
