@@ -3,6 +3,12 @@ import test from 'node:test';
 import { cartSavings } from '../lib/utils/cart-savings';
 
 const usd = (amount: string) => ({ amount, currencyCode: 'USD' });
+test('unresolved optimistic cart currency suppresses promotions instead of crashing the drawer', () => {
+  assert.equal(
+    cartSavings({ cost: { subtotalAmount: { amount: '0', currencyCode: '' } }, lines: { nodes: [] } }),
+    null,
+  );
+});
 const allocation = (amount: string, type = 'CartCodeDiscountAllocation', targetType = 'LINE_ITEM') => ({
   __typename: type,
   targetType,

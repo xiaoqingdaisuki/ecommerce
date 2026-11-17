@@ -84,8 +84,10 @@ export function Hero({ products }: { products: ProductCard[] }) {
                 <div className="hero-product relative flex aspect-[1.2] min-w-0 items-center justify-center lg:aspect-square">
                   <ProductBadges
                     availableForSale={product.availableForSale}
-                    price={product.priceRange.minVariantPrice}
-                    compareAt={product.compareAtPriceRange.minVariantPrice}
+                    price={
+                      product.selectedOrFirstAvailableVariant?.price ?? product.priceRange.minVariantPrice
+                    }
+                    compareAt={product.selectedOrFirstAvailableVariant?.compareAtPrice}
                   />
                   {product.featuredImage ? (
                     <Image

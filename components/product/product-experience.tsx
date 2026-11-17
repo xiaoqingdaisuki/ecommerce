@@ -5,7 +5,7 @@ import type { PurchaseProduct } from '@/lib/shopify/queries/catalog';
 import { ProductPurchase } from './product-purchase';
 import { ProductGallery } from './product-gallery';
 import { Icon } from '@/components/ui/icons';
-import { variantParam } from '@/lib/utils/shopify-routes';
+import { initialVariant } from '@/lib/utils/product-variant';
 import { ProductBadges } from './product-badges';
 
 export function ProductExperience({
@@ -15,15 +15,10 @@ export function ProductExperience({
   product: PurchaseProduct;
   initialVariantId?: string;
 }) {
-  const initialImage = product.variants.nodes.find((variant) => variantParam(variant.id) === initialVariantId)
-    ?.image?.url;
+  const first = initialVariant(product.variants.nodes, initialVariantId);
+  const initialImage = first?.image?.url ?? product.featuredImage?.url;
   const [selectedUrl, setSelectedUrl] = useState(initialImage);
-  const [selectedVariant, setSelectedVariant] = useState(
-    () =>
-      product.variants.nodes.find((variant) => variantParam(variant.id) === initialVariantId) ??
-      product.variants.nodes.find((variant) => variant.availableForSale) ??
-      product.variants.nodes[0],
-  );
+  const [selectedVariant, setSelectedVariant] = useState(first);
   const images = useMemo(() => {
     const list = [...product.images.nodes];
     for (const variant of product.variants.nodes)
@@ -45,9 +40,7 @@ export function ProductExperience({
             <ProductBadges
               availableForSale={product.availableForSale && (selectedVariant?.availableForSale ?? true)}
               price={selectedVariant?.price ?? product.priceRange.minVariantPrice}
-              compareAt={
-                selectedVariant ? selectedVariant.compareAtPrice : product.compareAtPriceRange.minVariantPrice
-              }
+              compareAt={selectedVariant?.compareAtPrice}
             />
           }
         />
@@ -57,7 +50,7 @@ export function ProductExperience({
           product={product}
           initialVariantId={initialVariantId}
           onVariantChange={(variant) => {
-            setSelectedUrl(variant.image?.url);
+            setSelectedUrl(variant.image?.url ?? product.featuredImage?.url);
             setSelectedVariant(variant);
           }}
         />

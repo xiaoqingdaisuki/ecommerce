@@ -6,5 +6,11 @@ export const PRODUCT_CARD = gql(`
     featuredImage { url altText width height }
     priceRange { minVariantPrice { amount currencyCode } }
     compareAtPriceRange { minVariantPrice { amount currencyCode } }
+    selectedOrFirstAvailableVariant {
+      id availableForSale
+      price { amount currencyCode }
+      compareAtPrice { amount currencyCode }
+      image { url altText width height }
+    }
   }
 `);

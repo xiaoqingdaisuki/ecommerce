@@ -13,6 +13,8 @@ export function cartSavings(cart: {
   discountAllocations?: readonly Allocation[];
 }) {
   const currencyCode = cart.cost.subtotalAmount.currencyCode;
+  // Hydrogen's empty/optimistic cart may not have resolved its currency yet.
+  if (!/^[A-Z]{3}$/.test(currencyCode)) return null;
   const digits = new Intl.NumberFormat('en', { style: 'currency', currency: currencyCode }).resolvedOptions()
     .maximumFractionDigits;
   const factor = 10 ** (digits ?? 2);

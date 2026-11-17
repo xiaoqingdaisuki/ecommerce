@@ -54,44 +54,44 @@ export function Header({
             aria-label="Main navigation"
             className="hidden shrink-0 items-center gap-5 whitespace-nowrap text-[13px] font-medium lg:flex"
           >
-            {STORE_NAVIGATION.slice(0, 2).map((link) => (
-              <Link key={link.href} href={link.href} className="main-nav-link">
-                {link.title}
-              </Link>
-            ))}
-            <div className="nav-group">
-              <Link href="/collections" className="main-nav-link">
-                Explore <Icon name="chevron" className="rotate-90" width={12} height={12} />
-              </Link>
-              <div className="mega-menu">
-                <div className="store-container grid grid-cols-[1fr_2fr] gap-12 py-9">
-                  <div className="flex flex-col items-start">
-                    <p className="eyebrow text-emerald-700">Discover more</p>
-                    <h2 className="mt-3 text-3xl font-semibold tracking-tight">Find your next favorite.</h2>
-                    <Link href="/collections/all" className="text-link mt-6">
-                      Explore all products <Icon name="arrow" width={16} />
-                    </Link>
-                  </div>
-                  <div className="grid grid-cols-2 content-start gap-x-5 gap-y-1">
-                    {[...collections, ...links]
-                      .filter(
-                        (link, index, all) => all.findIndex((item) => item.href === link.href) === index,
-                      )
-                      .map((link) => (
-                        <Link key={link.href} href={link.href} className="mega-link">
-                          {link.title}
-                          <Icon name="arrow" width={16} />
+            {STORE_NAVIGATION.map((link) =>
+              link.href !== '/collections' ? (
+                <Link key={link.href} href={link.href} className="main-nav-link">
+                  {link.title}
+                </Link>
+              ) : (
+                <div key={link.href} className="nav-group">
+                  <Link href={link.href} className="main-nav-link">
+                    {link.title} <Icon name="chevron" className="rotate-90" width={12} height={12} />
+                  </Link>
+                  <div className="mega-menu">
+                    <div className="store-container grid grid-cols-[1fr_2fr] gap-12 py-9">
+                      <div className="flex flex-col items-start">
+                        <p className="eyebrow text-emerald-700">Discover more</p>
+                        <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+                          Find your next favorite.
+                        </h2>
+                        <Link href="/collections/all" className="text-link mt-6">
+                          Explore all products <Icon name="arrow" width={16} />
                         </Link>
-                      ))}
+                      </div>
+                      <div className="grid grid-cols-2 content-start gap-x-5 gap-y-1">
+                        {[...collections, ...links]
+                          .filter(
+                            (link, index, all) => all.findIndex((item) => item.href === link.href) === index,
+                          )
+                          .map((link) => (
+                            <Link key={link.href} href={link.href} className="mega-link">
+                              {link.title}
+                              <Icon name="arrow" width={16} />
+                            </Link>
+                          ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            {STORE_NAVIGATION.slice(3).map((link) => (
-              <Link key={link.href} href={link.href} className="main-nav-link">
-                {link.title}
-              </Link>
-            ))}
+              ),
+            )}
           </nav>
           <div className="flex shrink-0 items-center gap-0 lg:gap-2">
             <SearchDialog />

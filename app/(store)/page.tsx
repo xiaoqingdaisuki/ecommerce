@@ -92,8 +92,10 @@ export default async function HomePage() {
               <div className="relative flex min-h-[280px] flex-1 items-center justify-center lg:min-h-[340px]">
                 <ProductBadges
                   availableForSale={spotlight.availableForSale}
-                  price={spotlight.priceRange.minVariantPrice}
-                  compareAt={spotlight.compareAtPriceRange.minVariantPrice}
+                  price={
+                    spotlight.selectedOrFirstAvailableVariant?.price ?? spotlight.priceRange.minVariantPrice
+                  }
+                  compareAt={spotlight.selectedOrFirstAvailableVariant?.compareAtPrice}
                 />
                 {spotlight.featuredImage ? (
                   <Image
@@ -110,8 +112,10 @@ export default async function HomePage() {
                   <p className="mb-2 text-xs text-neutral-500">{spotlight.productType || spotlight.vendor}</p>
                   <h3 className="mb-3 text-xl font-semibold tracking-tight">{spotlight.title}</h3>
                   <Price
-                    price={spotlight.priceRange.minVariantPrice}
-                    compareAt={spotlight.compareAtPriceRange.minVariantPrice}
+                    price={
+                      spotlight.selectedOrFirstAvailableVariant?.price ?? spotlight.priceRange.minVariantPrice
+                    }
+                    compareAt={spotlight.selectedOrFirstAvailableVariant?.compareAtPrice}
                   />
                 </div>
                 <Link

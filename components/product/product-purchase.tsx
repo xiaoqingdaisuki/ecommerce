@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { PurchaseProduct } from '@/lib/shopify/queries/catalog';
 import { useCart, useCartForm } from '@/lib/shopify/cart.client';
 import { variantParam } from '@/lib/utils/shopify-routes';
+import { initialVariant } from '@/lib/utils/product-variant';
 import { buyNow } from '@/lib/shopify/mutations/checkout';
 import { useCommerceActions } from '@/components/ui/commerce-provider';
 import { Icon } from '@/components/ui/icons';
@@ -25,12 +26,7 @@ export function ProductPurchase({
   onAdded?: () => void;
   onVariantChange?: (variant: Variant) => void;
 }) {
-  const first =
-    product.variants.nodes.find(
-      (variant) => variantParam(variant.id) === variantParam(initialVariantId ?? ''),
-    ) ??
-    product.variants.nodes.find((variant) => variant.availableForSale) ??
-    product.variants.nodes[0];
+  const first = initialVariant(product.variants.nodes, initialVariantId);
   const [selectedId, setSelectedId] = useState(first?.id);
   const [quantity, setQuantity] = useState(1);
   const [buying, setBuying] = useState(false);

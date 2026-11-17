@@ -8,14 +8,12 @@ import type { PurchaseProduct } from '@/lib/shopify/queries/catalog';
 import { ProductPurchase } from './product-purchase';
 import { Icon } from '@/components/ui/icons';
 import { ProductBadges } from './product-badges';
+import { initialVariant } from '@/lib/utils/product-variant';
 
 export function QuickBuy({ handle, onClose }: { handle: string; onClose: () => void }) {
   const [product, setProduct] = useState<PurchaseProduct>();
   const [selectedVariant, setSelectedVariant] = useState<PurchaseProduct['variants']['nodes'][number]>();
-  const activeVariant =
-    selectedVariant ??
-    product?.variants.nodes.find((variant) => variant.availableForSale) ??
-    product?.variants.nodes[0];
+  const activeVariant = selectedVariant ?? (product ? initialVariant(product.variants.nodes) : undefined);
   const selectedImage = activeVariant?.image ?? product?.featuredImage;
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
@@ -58,11 +56,7 @@ export function QuickBuy({ handle, onClose }: { handle: string; onClose: () => v
                     <ProductBadges
                       availableForSale={product.availableForSale && (activeVariant?.availableForSale ?? true)}
                       price={activeVariant?.price ?? product.priceRange.minVariantPrice}
-                      compareAt={
-                        activeVariant
-                          ? activeVariant.compareAtPrice
-                          : product.compareAtPriceRange.minVariantPrice
-                      }
+                      compareAt={activeVariant?.compareAtPrice}
                     />
                     {selectedImage || product.featuredImage ? (
                       <Image

@@ -7,8 +7,9 @@ import { Price } from './price';
 import { ProductBadges } from './product-badges';
 
 export function ProductCard({ product, priority = false }: { product: ProductCardData; priority?: boolean }) {
-  const price = product.priceRange.minVariantPrice;
-  const compareAt = product.compareAtPriceRange.minVariantPrice;
+  const variant = product.selectedOrFirstAvailableVariant;
+  const price = variant?.price ?? product.priceRange.minVariantPrice;
+  const compareAt = variant?.compareAtPrice;
   return (
     <article className="product-card group flex h-full min-w-0 flex-col">
       <div className="product-media">

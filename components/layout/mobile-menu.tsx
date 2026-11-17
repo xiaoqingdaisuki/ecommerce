@@ -26,10 +26,10 @@ export function MobileMenu({ links, name }: { links: NavigationLink[]; name: str
           <Dialog.Description className="sr-only">Browse our store</Dialog.Description>
           <nav className="flex flex-col" aria-label="Mobile navigation">
             {STORE_NAVIGATION.map((link) =>
-              link.title === 'Explore' ? (
+              link.href === '/collections' ? (
                 <details key={link.href}>
                   <summary className="menu-link">
-                    Explore <Icon name="chevron" className="disclosure-chevron" width={16} />
+                    {link.title} <Icon name="chevron" className="disclosure-chevron" width={16} />
                   </summary>
                   <div className="flex flex-col pb-3 pl-4">
                     {[{ title: 'All collections', href: '/collections' }, ...links]
