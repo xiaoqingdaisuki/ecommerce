@@ -16,12 +16,22 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   if (!page) notFound();
   const type = typeof params.type === 'string' ? params.type : undefined;
   const sort =
-    params.sort_by === 'price-ascending' || params.sort_by === 'price-descending' ? params.sort_by : 'relevance';
-  const result = query ? await searchStore(query, page, type, sort) : null;
+    params.sort_by === 'price-ascending' || params.sort_by === 'price-descending'
+      ? params.sort_by
+      : 'relevance';
+  let result: Awaited<ReturnType<typeof searchStore>> | null = null;
+  let unavailable = false;
+  if (query) {
+    try {
+      result = await searchStore(query, page, type, sort);
+    } catch {
+      unavailable = true;
+    }
+  }
   const products = result?.nodes.filter((item) => item.__typename === 'Product') ?? [];
   const content = result?.nodes.filter((item) => item.__typename !== 'Product') ?? [];
   return (
-    <section className="container page-section">
+    <section className="store-container page-section">
       <div className="page-heading">
         <p className="eyebrow">Search the store</p>
         <h1>{query ? `Results for “${query}”` : 'Search.'}</h1>
@@ -35,7 +45,10 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           maxLength={160}
         />
         {type ? <input type="hidden" name="type" value={type} /> : null}
-        <select name="sort_by" defaultValue={sort} aria-label="Sort search results">
+        <label htmlFor="search-sort" className="text-xs text-neutral-500">
+          Sort by
+        </label>
+        <select id="search-sort" name="sort_by" defaultValue={sort} aria-label="Sort search results">
           <option value="relevance">Relevance</option>
           <option value="price-ascending">Price: low to high</option>
           <option value="price-descending">Price: high to low</option>
@@ -44,7 +57,12 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
           Search
         </button>
       </form>
-      {result ? (
+      {unavailable ? (
+        <div className="notice" role="alert">
+          Search is temporarily unavailable. Your search has been kept above; please use the form to try
+          again.
+        </div>
+      ) : result ? (
         <>
           {products.length ? <ProductGrid products={products} /> : null}
           {content.map((item) => (
@@ -52,7 +70,9 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
               <h2>
                 <Link
                   href={
-                    item.__typename === 'Page' ? `/pages/${item.handle}` : `/blogs/${item.blog.handle}/${item.handle}`
+                    item.__typename === 'Page'
+                      ? `/pages/${item.handle}`
+                      : `/blogs/${item.blog.handle}/${item.handle}`
                   }
                 >
                   {item.title}
@@ -61,8 +81,15 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
               <p>{item.__typename === 'Page' ? item.bodySummary : item.excerpt}</p>
             </article>
           ))}
-          {!result.nodes.length ? <p className="empty-state">No matching results. Try another search.</p> : null}
-          <Pagination pathname="/search" params={params} page={page} hasNextPage={result.pageInfo.hasNextPage} />
+          {!result.nodes.length ? (
+            <p className="empty-state">No matching results. Try another search.</p>
+          ) : null}
+          <Pagination
+            pathname="/search"
+            params={params}
+            page={page}
+            hasNextPage={result.pageInfo.hasNextPage}
+          />
         </>
       ) : (
         <p className="muted">

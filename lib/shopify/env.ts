@@ -27,7 +27,9 @@ export const isDemo = !env.SHOPIFY_STORE_DOMAIN || env.SHOPIFY_STORE_DOMAIN.ends
 export const storeDomain = env.SHOPIFY_STORE_DOMAIN ?? 'mock.shop';
 
 if (!isDemo && !env.SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
-  throw new Error('A real store requires SHOPIFY_STOREFRONT_ACCESS_TOKEN. Use a public Storefront API token.');
+  throw new Error(
+    'A real store requires SHOPIFY_STOREFRONT_ACCESS_TOKEN. Use a public Storefront API token.',
+  );
 }
 
 if (process.env.VERCEL_ENV === 'production') {

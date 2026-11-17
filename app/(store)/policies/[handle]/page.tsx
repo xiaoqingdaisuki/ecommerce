@@ -11,14 +11,17 @@ async function findPolicy(handle: string) {
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
-  return { title: (await findPolicy(handle))?.title ?? 'Policy', alternates: { canonical: `/policies/${handle}` } };
+  return {
+    title: (await findPolicy(handle))?.title ?? 'Policy',
+    alternates: { canonical: `/policies/${handle}` },
+  };
 }
 
 export default async function PolicyPage({ params }: { params: Promise<{ handle: string }> }) {
   const policy = await findPolicy((await params).handle);
   if (!policy) notFound();
   return (
-    <article className="container page-section prose">
+    <article className="store-container page-section prose">
       <h1>{policy.title}</h1>
       <CmsContent html={policy.body} />
     </article>

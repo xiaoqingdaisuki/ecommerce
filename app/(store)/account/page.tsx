@@ -4,7 +4,7 @@ import { env, isDemo, storeDomain } from '@/lib/shopify/env';
 export const metadata = { title: 'Account', robots: { index: false, follow: false } };
 export default function AccountPage() {
   return (
-    <section className="container narrow page-section account-page">
+    <section className="store-container narrow page-section account-page">
       <p className="eyebrow">Your account</p>
       <h1>Welcome back.</h1>
       <p className="muted">

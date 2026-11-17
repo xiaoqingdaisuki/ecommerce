@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { Suspense } from 'react';
 import { env, isDemo } from '@/lib/shopify/env';
 import { AppShell } from './app-shell';
 import { getShop } from '@/lib/shopify/queries/content.server';
@@ -12,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const noIndex = isDemo || (process.env.VERCEL_ENV && process.env.VERCEL_ENV !== 'production');
   return {
     metadataBase: new URL(env.SITE_ORIGIN),
-    title: { default: `${name} — The collection`, template: `%s | ${name}` },
+    title: { default: `${name} — Made for what’s next`, template: `%s | ${name}` },
     description: shop.description || 'Discover our latest collection.',
     robots: noIndex ? { index: false, follow: false } : { index: true, follow: true },
   };
@@ -25,15 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
-        <Suspense
-          fallback={
-            <div className="page-loading" role="status">
-              Loading store…
-            </div>
-          }
-        >
-          <AppShell>{children}</AppShell>
-        </Suspense>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

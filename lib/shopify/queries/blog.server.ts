@@ -26,6 +26,9 @@ const ARTICLE_QUERY = gql(`
 `);
 
 export async function getBlog(handle: string, page: number) {
+  'use cache';
+  cacheLife('catalog');
+  cacheTag('content:blogs');
   const client = createCatalogClient();
   const cursor = await pageCursor(page, async (first, after) => {
     const { data, errors } = await client.graphql(BLOG_QUERY, { variables: { handle, first, after } });
@@ -42,8 +45,8 @@ export async function getBlog(handle: string, page: number) {
 }
 
 export async function getArticle(blogHandle: string, articleHandle: string) {
-  'use cache: remote';
-  cacheLife('minutes');
+  'use cache';
+  cacheLife('catalog');
   cacheTag('content:blogs');
   const { data, errors } = await createCatalogClient().graphql(ARTICLE_QUERY, {
     variables: { blogHandle, articleHandle },

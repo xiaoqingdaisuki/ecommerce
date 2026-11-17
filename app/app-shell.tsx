@@ -1,7 +1,4 @@
-import { connection } from 'next/server';
 import type { ReactNode } from 'react';
-import { cartHandlers } from '@/lib/shopify/cart.server';
-import { getRequestClient } from '@/lib/shopify/client';
 import { env, isDemo, storeDomain } from '@/lib/shopify/env';
 import { getShop } from '@/lib/shopify/queries/content.server';
 import { Header } from '@/components/layout/header';
@@ -9,13 +6,10 @@ import { Footer } from '@/components/layout/footer';
 import { ShopifyRuntime } from '@/components/layout/shopify-runtime';
 import { storefrontHref, type NavigationLink } from '@/lib/utils/storefront-url';
 import { Providers } from './providers';
+import { getCollections } from '@/lib/shopify/queries/catalog.server';
 
 export async function AppShell({ children }: { children: ReactNode }) {
-  await connection();
-  const cartData = getRequestClient().then((storefrontClient) =>
-    cartHandlers.get({ storefrontClient }).then(({ data }) => data),
-  );
-  const shop = await getShop();
+  const [shop, collections] = await Promise.all([getShop(), getCollections()]);
   const name = isDemo ? 'Atelier' : shop.name;
   const domains = [storeDomain, new URL(shop.primaryDomain.url).hostname];
   const mapLinks = (items: { title: string; url: string | null }[]): NavigationLink[] =>
@@ -36,13 +30,22 @@ export async function AppShell({ children }: { children: ReactNode }) {
   }
   footerLinks.push({ title: 'Account', href: '/account' });
   return (
-    <Providers cartData={cartData}>
-      <Header isDemo={isDemo} name={name} links={links} />
+    <Providers>
+      <Header
+        isDemo={isDemo}
+        name={name}
+        links={links}
+        collections={collections.map((item) => ({ title: item.title, href: `/collections/${item.handle}` }))}
+      />
       <main id="main-content">{children}</main>
       <Footer name={name} links={footerLinks} />
       {!isDemo ? (
         <ShopifyRuntime
-          shop={{ shopId: shop.id, storefrontId: env.SHOPIFY_STOREFRONT_ID ?? '0', myshopifyDomain: storeDomain }}
+          shop={{
+            shopId: shop.id,
+            storefrontId: env.SHOPIFY_STOREFRONT_ID ?? '0',
+            myshopifyDomain: storeDomain,
+          }}
           inbox={env.SHOPIFY_INBOX_ENABLED === 'true'}
         />
       ) : null}

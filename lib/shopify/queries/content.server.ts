@@ -24,8 +24,8 @@ const PAGE_QUERY = gql(
 );
 
 export async function getShop() {
-  'use cache: remote';
-  cacheLife('minutes');
+  'use cache';
+  cacheLife('catalog');
   cacheTag('content:shop');
   const { data, errors } = await createCatalogClient().graphql(SHOP_QUERY);
   if (errors?.length || !data) throw new Error('Store content is temporarily unavailable.');
@@ -39,8 +39,8 @@ export async function getShop() {
 }
 
 export async function getPage(handle: string) {
-  'use cache: remote';
-  cacheLife('minutes');
+  'use cache';
+  cacheLife('catalog');
   cacheTag('content:pages');
   const { data, errors } = await createCatalogClient().graphql(PAGE_QUERY, { variables: { handle } });
   if (errors?.length || !data) throw new Error('This page could not be loaded.');

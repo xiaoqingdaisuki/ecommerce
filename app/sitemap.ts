@@ -11,6 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: origin, changeFrequency: 'daily' },
     { url: `${origin}/collections`, changeFrequency: 'weekly' },
     { url: `${origin}/collections/all`, changeFrequency: 'daily' },
+    { url: `${origin}/support`, changeFrequency: 'monthly' },
   ];
   const collections = await getCollections();
   entries.push(
@@ -31,7 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })),
     );
     after = data.products.pageInfo.hasNextPage ? (data.products.pageInfo.endCursor ?? undefined) : undefined;
-    if (entries.length > 49_000) throw new Error('Large catalog requires partitioned sitemaps using generateSitemaps');
+    if (entries.length > 49_000)
+      throw new Error('Large catalog requires partitioned sitemaps using generateSitemaps');
   } while (after);
   do {
     const { data, errors } = await client.graphql(CMS_SITEMAP_QUERY, { variables: { after } });
@@ -42,7 +44,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .map((page) => ({ url: `${origin}/pages/${page.handle}`, lastModified: page.updatedAt })),
     );
     after = data.pages.pageInfo.hasNextPage ? (data.pages.pageInfo.endCursor ?? undefined) : undefined;
-    if (entries.length > 49_000) throw new Error('Large catalog requires partitioned sitemaps using generateSitemaps');
+    if (entries.length > 49_000)
+      throw new Error('Large catalog requires partitioned sitemaps using generateSitemaps');
   } while (after);
   const shop = await getShop();
   for (const policy of [shop.privacyPolicy, shop.refundPolicy, shop.shippingPolicy, shop.termsOfService]) {

@@ -28,7 +28,8 @@ export function CheckoutButton({ isDemo }: { isDemo: boolean }) {
           setError(undefined);
           try {
             const url = await prepareCheckout();
-            if (latest.current.cart !== cart || latest.current.pending) throw new Error('Cart changed during checkout');
+            if (latest.current.cart !== cart || latest.current.pending)
+              throw new Error('Cart changed during checkout');
             window.location.assign(url);
           } catch {
             setError('Checkout is unavailable. Please try again.');
@@ -36,10 +37,12 @@ export function CheckoutButton({ isDemo }: { isDemo: boolean }) {
           }
         }}
       >
-        {busy ? 'Opening checkout…' : 'Continue to checkout'}
+        {busy ? 'OPENING CHECKOUT…' : 'CONTINUE TO CHECKOUT'}
         <span>↗</span>
       </button>
-      {isDemo ? <p className="muted small">Demo store · Connect your Shopify store to enable checkout.</p> : null}
+      {isDemo ? (
+        <p className="muted small">Demo store · Connect your Shopify store to enable checkout.</p>
+      ) : null}
       {error ? (
         <p role="alert" className="error-message">
           {error}

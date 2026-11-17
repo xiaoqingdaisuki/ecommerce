@@ -10,3 +10,4 @@ next-env.d.ts
 storefront-graphql-env.d.ts
 customer-account-graphql-env.d.ts
 .hydrogen-gql-*.json
+.vscode/

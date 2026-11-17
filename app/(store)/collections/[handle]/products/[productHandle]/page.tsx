@@ -11,6 +11,9 @@ export async function generateMetadata({ params }: Props) {
 
 export default function ProductInCollectionPage({ params, searchParams }: Props) {
   return (
-    <ProductPage params={params.then(({ productHandle }) => ({ handle: productHandle }))} searchParams={searchParams} />
+    <ProductPage
+      params={params.then(({ productHandle }) => ({ handle: productHandle }))}
+      searchParams={searchParams}
+    />
   );
 }

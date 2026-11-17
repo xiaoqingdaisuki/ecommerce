@@ -4,13 +4,15 @@ import { headers } from 'next/headers';
 import { cache } from 'react';
 import { env, storeDomain } from '@/lib/shopify/env';
 import { i18n } from './i18n';
+import { catalogFetch } from '@/lib/utils/catalog-fetch';
 
-export function createRequestClient(request: Request | { headers: Headers }) {
+export function createRequestClient(request: Request | { headers: Headers }, publicCatalog = false) {
   const requestContext = createShopifyRequestContext({ request, i18n });
   const client = createStorefrontClient({
     type: 'public',
     requestContext,
     config: {
+      ...(publicCatalog ? { fetch: catalogFetch } : {}),
       storeDomain,
       publicStorefrontToken: env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
       apiVersion: env.SHOPIFY_API_VERSION,
@@ -27,5 +29,5 @@ export const getRequestClient = cache(async () => {
 /** Public catalog reads deliberately have no shopper cookies or session context. */
 export function createCatalogClient() {
   // A static catalog context has no request ID; avoid Hydrogen's random UUID fallback.
-  return createRequestClient({ headers: new Headers({ 'x-request-id': '' }) }).client;
+  return createRequestClient({ headers: new Headers({ 'x-request-id': '' }) }, true).client;
 }

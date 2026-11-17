@@ -20,7 +20,7 @@ export default async function ArticlePage({ params }: Props) {
   const article = await getArticle(blogHandle, articleHandle);
   if (!article) notFound();
   return (
-    <article className="container page-section prose">
+    <article className="store-container page-section prose">
       <h1>{article.title}</h1>
       <CmsContent html={article.contentHtml} />
     </article>

@@ -3,7 +3,8 @@ import { env, storeDomain } from '@/lib/shopify/env';
 import { readWebhookBody, verifyWebhook, webhookTags } from '@/lib/shopify/webhook';
 
 export async function POST(request: Request) {
-  if (!env.SHOPIFY_WEBHOOK_SECRET) return Response.json({ error: 'Webhook is not configured' }, { status: 503 });
+  if (!env.SHOPIFY_WEBHOOK_SECRET)
+    return Response.json({ error: 'Webhook is not configured' }, { status: 503 });
   let body: Uint8Array;
   try {
     body = await readWebhookBody(request);

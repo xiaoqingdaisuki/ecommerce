@@ -7,10 +7,11 @@ export const metadata = { title: 'Collections' };
 export default async function CollectionsPage() {
   const collections = await getCollections();
   return (
-    <section className="container page-section">
+    <section className="store-container page-section">
       <div className="page-heading">
-        <p className="eyebrow">Find your everyday</p>
-        <h1>The collections.</h1>
+        <p className="eyebrow">Find your direction</p>
+        <h1>Something for your next chapter.</h1>
+        <p className="muted">Explore our collections, one possibility at a time.</p>
       </div>
       <div className="collections-grid">
         {collections.map((collection, index) => (
@@ -21,7 +22,7 @@ export default async function CollectionsPage() {
                   src={collection.image.url}
                   alt={collection.image.altText ?? collection.title}
                   fill
-                  sizes="(max-width: 700px) 100vw, 33vw"
+                  sizes="(max-width: 1023px) 100vw, 33vw"
                 />
               ) : (
                 <span className="collection-monogram">{String(index + 1).padStart(2, '0')}</span>

@@ -1,7 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { storefrontHref } from '../lib/utils/storefront-url';
-import { isNativeVariantPage, pageCursor, pageHref, pageNumber, variantParam } from '../lib/utils/shopify-routes';
+import {
+  isNativeVariantPage,
+  pageCursor,
+  pageHref,
+  pageNumber,
+  variantParam,
+} from '../lib/utils/shopify-routes';
 
 test('CMS links preserve native Shopify paths, queries and fragments', () => {
   const domains = ['store.myshopify.com'];

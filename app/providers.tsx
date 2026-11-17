@@ -2,10 +2,16 @@
 
 import type { ReactNode } from 'react';
 import { CartProvider } from '@/lib/shopify/cart.client';
-import type { cartHandlers } from '@/lib/shopify/cart.server';
+import { CommerceProvider } from '@/components/ui/commerce-provider';
+import { WebVitals } from '@/components/performance/web-vitals';
 
-type CartData = Awaited<ReturnType<typeof cartHandlers.get>>['data'];
-
-export function Providers({ children, cartData }: { children: ReactNode; cartData: Promise<CartData> }) {
-  return <CartProvider initialData={cartData}>{children}</CartProvider>;
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <CartProvider>
+      <CommerceProvider>
+        {children}
+        <WebVitals />
+      </CommerceProvider>
+    </CartProvider>
+  );
 }
